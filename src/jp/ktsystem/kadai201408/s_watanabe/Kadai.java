@@ -186,4 +186,8 @@ public class Kadai {
 
 	}
 
+
+
+
+
 }
