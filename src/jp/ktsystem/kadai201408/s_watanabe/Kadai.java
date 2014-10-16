@@ -60,7 +60,7 @@ public class Kadai {
 			if (null != str) {
 
 				// 要素を配列に詰める
-				String[] array = str.split(",");
+				String[] array = str.split(",", -1);
 
 				// 配列の要素を取り出して計算する
 				for (int n = 0; n < array.length; n++) {
