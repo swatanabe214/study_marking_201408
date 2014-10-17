@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -35,6 +36,7 @@ public class Kadai {
 	public static long calcScoreSum(String anInputPath) throws KadaiException {
 
 		BufferedReader br = null;
+		FileInputStream fis = null;
 		long calcScoreSum = 0;
 
 		if (null == anInputPath) {
@@ -58,27 +60,27 @@ public class Kadai {
 			if (null != str) {
 
 				// 要素を配列に詰める
-				String[] array = str.split(",", -1);
+				String[] array = str.split(",");
 
 				// 配列の要素を取り出して計算する
-				for (int i = 0; i < array.length; i++) {
+				for (int n = 0; n < array.length; n++) {
 
 					//
 					// 文字を数字に置き換える
 					//
 
 					// 半角英数の小文字を大文字に変換
-					String st = array[i].toUpperCase();
+					String st = array[n].toUpperCase();
 
 					// 数字・全角文字チェック
 					validateHalfWidthEnglish(st);
 
 					// 要素一つ一つに分解
 					int sum = 0;
-					for (int j = 0; j < st.length(); j++) {
+					for (int i = 0; i < st.length(); i++) {
 
 						// 一文字
-						char one = st.charAt(j);
+						char one = st.charAt(i);
 
 						// 要素の中身（一文字ずつバラバラにしたもの）を足す
 						long parts = ((int) one) - ((int) 'A' - 1);
@@ -87,7 +89,7 @@ public class Kadai {
 					}
 
 					// n + 1番目をかける
-					long multiplyValue = sum * (i + 1);
+					long multiplyValue = sum * (n + 1);
 
 					// 要素を一つずつ足す
 					calcScoreSum += multiplyValue;
@@ -95,16 +97,21 @@ public class Kadai {
 				}
 			}
 
+		} catch (FileNotFoundException e) {
+
+			throw new KadaiException(ErrorCode.FILE_IN_OUT);
+
 		} catch (IOException e) {
 
 			throw new KadaiException(ErrorCode.FILE_IN_OUT);
 
 		} finally {
 
-			if (null != br) {
+			if (null != br && null != fis) {
 
 				try {
 
+					fis.close();
 					br.close();
 
 				} catch (IOException e) {
@@ -168,9 +175,9 @@ public class Kadai {
 	 * @param String 半角英字の文字列
 	 * @exception KadaiException 半角英字以外が存在する時の例外
 	 */
-	private static void validateHalfWidthEnglish(String aSt) throws KadaiException {
+	private static void validateHalfWidthEnglish(String anArray) throws KadaiException {
 
-		if (!aSt.matches("[A-Z]*")) {
+		if (!anArray.matches("[A-Z]*")) {
 
 			// 半角英字以外はエラー
 			throw new KadaiException(ErrorCode.INVALID_STRING);

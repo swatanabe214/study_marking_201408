@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="C:/Users/s_watanabe/Desktop/Lv1配布物/Lv1配布物/KadaiException.jar" sourcepath="lib"/>
+	<classpathentry kind="lib" path="C:/Users/s_watanabe/Desktop/Lv1配布物/Lv1配布物/KadaiException.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
