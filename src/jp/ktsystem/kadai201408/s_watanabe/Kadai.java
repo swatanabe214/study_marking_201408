@@ -20,6 +20,8 @@ public class Kadai {
 
 	/** 文字コード */
 	private static final String CHARACTER_CODE = "UTF-8";
+	/** 無効な演算子（BOM） */
+	private static final String BOM = "\uFEFF";
 
 	/**
 	 * <p>ファイルを読み込み、<br>
@@ -129,7 +131,7 @@ public class Kadai {
 	 */
 	private static String skipBOM(String str) {
 
-		if (str.startsWith("\uFEFF")) {
+		if (str.startsWith(BOM)) {
 
 			// BOMを取り外す
 			str = str.substring(1);
