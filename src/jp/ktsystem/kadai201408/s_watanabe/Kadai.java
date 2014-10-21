@@ -20,8 +20,8 @@ import jp.ktsystem.kadai201408.common.KadaiException;
  */
 public class Kadai {
 
-	/** 文字コード：UTF-8 */
-	private static final String CHARACTER_CODE_UTF8 = "UTF-8";
+	/** 文字コード */
+	private static final String CHARACTER_CODE = "UTF-8";
 
 	/**
 	 * <p>ファイルを読み込み、<br>
@@ -48,8 +48,8 @@ public class Kadai {
 			// ファイル読み込み
 			File file = new File(anInputPath);
 
-			// BufferedReaderを作る（UTF-8を指定）
-			br = new BufferedReader(new InputStreamReader(skipUTF8BOM(new FileInputStream(file), CHARACTER_CODE_UTF8)));
+			// BufferedReaderを作る（文字コードを指定）
+			br = new BufferedReader(new InputStreamReader(skipUTF8BOM(new FileInputStream(file), CHARACTER_CODE)));
 
 			// 1行読み込み
 			String str = br.readLine();
@@ -130,7 +130,7 @@ public class Kadai {
 	 */
 	private static InputStream skipUTF8BOM(InputStream anInputStream, String aCharSet) throws IOException {
 
-		if (!CHARACTER_CODE_UTF8.equals(aCharSet.toUpperCase())) {
+		if (!CHARACTER_CODE.equals(aCharSet.toUpperCase())) {
 
 			return anInputStream;
 
@@ -168,9 +168,9 @@ public class Kadai {
 	 * @param String 半角英字の文字列
 	 * @exception KadaiException 半角英字以外が存在する時の例外
 	 */
-	private static void validateHalfWidthEnglish(String aSt) throws KadaiException {
+	private static void validateHalfWidthEnglish(String aWord) throws KadaiException {
 
-		if (!aSt.matches("[A-Z]*")) {
+		if (!aWord.matches("[A-Z]*")) {
 
 			// 半角英字以外はエラー
 			throw new KadaiException(ErrorCode.INVALID_STRING);
