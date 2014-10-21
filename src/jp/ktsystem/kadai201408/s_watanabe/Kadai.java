@@ -1,11 +1,9 @@
 package jp.ktsystem.kadai201408.s_watanabe;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import jp.ktsystem.kadai201408.common.ErrorCode;
@@ -22,6 +20,8 @@ public class Kadai {
 
 	/** 文字コード */
 	private static final String CHARACTER_CODE = "UTF-8";
+	/** 無効な演算子（BOM） */
+	private static final String BOM = "\uFEFF";
 
 	/**
 	 * <p>ファイルを読み込み、<br>
@@ -49,13 +49,16 @@ public class Kadai {
 			File file = new File(anInputPath);
 
 			// BufferedReaderを作る（文字コードを指定）
-			br = new BufferedReader(new InputStreamReader(skipUTF8BOM(new FileInputStream(file), CHARACTER_CODE)));
+			br = new BufferedReader(new InputStreamReader(new FileInputStream(file), CHARACTER_CODE));
 
 			// 1行読み込み
 			String str = br.readLine();
 
 			// データがある時の処理
 			if (null != str) {
+
+				// BOM除去
+				str = skipBOM(str);
 
 				// 要素を配列に詰める
 				String[] array = str.split(",", -1);
@@ -121,45 +124,22 @@ public class Kadai {
 	}
 
 	/**
-	 * <p>UTF-8のBOMをスキップします。</p>
+	 * <p>BOMをスキップします。</p>
 	 *
-	 * @param InputStream 読み込むファイル
-	 * @param String 文字コード
-	 * @return anInputStream ファイル
-	 * @exception IOException
+	 * @param str ファイルの一行
+	 * @return str BOM除去後のファイルの一行
 	 */
-	private static InputStream skipUTF8BOM(InputStream anInputStream, String aCharSet) throws IOException {
+	private static String skipBOM(String str) {
 
-		if (!CHARACTER_CODE.equals(aCharSet.toUpperCase())) {
+		if (str.startsWith(BOM)) {
 
-			return anInputStream;
-
-		}
-
-		if (!anInputStream.markSupported()) {
-
-			// マーク機能が無い場合BufferedInputStreamを被せる
-			anInputStream = new BufferedInputStream(anInputStream);
+			// BOMを取り外す
+			str = str.substring(1);
 
 		}
 
-		// 先頭にマークを付ける
-		anInputStream.mark(3);
+		return str;
 
-		if (3 <= anInputStream.available()) {
-
-			byte b[] = new byte[3];
-			anInputStream.read(b, 0, 3);
-
-			if (b[0] != (byte) 0xEF || b[1] != (byte) 0xBB || b[2] != (byte) 0xBF) {
-
-				// BOMでない場合は先頭まで巻き戻す
-				anInputStream.reset();
-
-			}
-		}
-
-		return anInputStream;
 	}
 
 	/**
