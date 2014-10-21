@@ -1,11 +1,9 @@
 package jp.ktsystem.kadai201408.s_watanabe;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import jp.ktsystem.kadai201408.common.ErrorCode;
@@ -20,8 +18,8 @@ import jp.ktsystem.kadai201408.common.KadaiException;
  */
 public class Kadai {
 
-	/** 文字コード：UTF-8 */
-	private static final String CHARACTER_CODE_UTF8 = "UTF-8";
+	/** 文字コード */
+	private static final String CHARACTER_CODE = "UTF-8";
 
 	/**
 	 * <p>ファイルを読み込み、<br>
@@ -48,14 +46,17 @@ public class Kadai {
 			// ファイル読み込み
 			File file = new File(anInputPath);
 
-			// BufferedReaderを作る（UTF-8を指定）
-			br = new BufferedReader(new InputStreamReader(skipUTF8BOM(new FileInputStream(file), CHARACTER_CODE_UTF8)));
+			// BufferedReaderを作る（文字コードを指定）
+			br = new BufferedReader(new InputStreamReader(new FileInputStream(file), CHARACTER_CODE));
 
 			// 1行読み込み
 			String str = br.readLine();
 
 			// データがある時の処理
 			if (null != str) {
+
+				// BOM除去
+				str = skipBOM(str);
 
 				// 要素を配列に詰める
 				String[] array = str.split(",", -1);
@@ -121,45 +122,22 @@ public class Kadai {
 	}
 
 	/**
-	 * <p>UTF-8のBOMをスキップします。</p>
+	 * <p>BOMをスキップします。</p>
 	 *
-	 * @param InputStream 読み込むファイル
-	 * @param String 文字コード
-	 * @return anInputStream ファイル
-	 * @exception IOException
+	 * @param str ファイルの一行
+	 * @return str BOM除去後のファイルの一行
 	 */
-	private static InputStream skipUTF8BOM(InputStream anInputStream, String aCharSet) throws IOException {
+	private static String skipBOM(String str) {
 
-		if (!CHARACTER_CODE_UTF8.equals(aCharSet.toUpperCase())) {
+		if (str.startsWith("\uFEFF")) {
 
-			return anInputStream;
-
-		}
-
-		if (!anInputStream.markSupported()) {
-
-			// マーク機能が無い場合BufferedInputStreamを被せる
-			anInputStream = new BufferedInputStream(anInputStream);
+			// BOMを取り外す
+			str = str.substring(1);
 
 		}
 
-		// 先頭にマークを付ける
-		anInputStream.mark(3);
+		return str;
 
-		if (3 <= anInputStream.available()) {
-
-			byte b[] = new byte[3];
-			anInputStream.read(b, 0, 3);
-
-			if (b[0] != (byte) 0xEF || b[1] != (byte) 0xBB || b[2] != (byte) 0xBF) {
-
-				// BOMでない場合は先頭まで巻き戻す
-				anInputStream.reset();
-
-			}
-		}
-
-		return anInputStream;
 	}
 
 	/**
@@ -168,9 +146,9 @@ public class Kadai {
 	 * @param String 半角英字の文字列
 	 * @exception KadaiException 半角英字以外が存在する時の例外
 	 */
-	private static void validateHalfWidthEnglish(String aSt) throws KadaiException {
+	private static void validateHalfWidthEnglish(String aWord) throws KadaiException {
 
-		if (!aSt.matches("[A-Z]*")) {
+		if (!aWord.matches("[A-Z]*")) {
 
 			// 半角英字以外はエラー
 			throw new KadaiException(ErrorCode.INVALID_STRING);
